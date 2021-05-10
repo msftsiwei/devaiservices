@@ -20,7 +20,7 @@ on:
   pull_request:
 
 env:
-  IMAGE_NAME_PREFIX: gunicorn_python
+  IMAGE_NAME_PREFIX: gunicorn-python
 
 jobs:
   # Run tests.
@@ -62,14 +62,14 @@ jobs:
       - name: Build image
         run: |
           cd dockerimages/gunicorn${{ matrix.python }}
-          docker build . --file Dockerfile --tag $IMAGE_NAME_PREFIX${{ matrix.python }}
+          docker build . --file Dockerfile --tag $IMAGE_NAME_PREFIX-${{ matrix.python }}
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
       - name: Push image
         run: |
-          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME_PREFIX${{ matrix.python }}
+          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME_PREFIX-${{ matrix.python }}
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
           # Strip git ref prefix from version
@@ -80,5 +80,5 @@ jobs:
           [ "$VERSION" == "$default-branch" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
-          docker tag $IMAGE_NAME_PREFIX${{ matrix.python }} $IMAGE_ID:$VERSION
+          docker tag $IMAGE_NAME_PREFIX-${{ matrix.python }} $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
