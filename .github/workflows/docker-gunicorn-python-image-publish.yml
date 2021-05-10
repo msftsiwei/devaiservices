@@ -1,6 +1,12 @@
 name: Docker
 
 on:
+
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'manual trigger'  
+
   push:
     # Publish `$default-branch` as Docker `latest` image.
     branches:
